@@ -1,0 +1,47 @@
+@import '../../../core/styles/sass/helpers'
+
+
+.form__field
+    margin-bottom: 12px
+    width: 100%
+
+.form__label
+    display: block
+    font-size: 16px
+    font-weight: 500
+    margin-bottom: 8px
+    color: $n7
+
+.form__input
+    width: 100%
+    padding: 12px 24px
+    border-radius: 6px
+    background-color: $n3
+    font-size: 16px
+    transition: border-color 0.3s
+
+    &:focus
+        border-color: $p1
+        outline: none
+
+    &::placeholder
+        color: #A0AEC0
+
+body.dark
+    .form__field
+        background-color: $n7 !important
+        color: $n1 !important
+
+
+
+    .form__label
+        color: $n1 !important
+
+    .form__input
+        background-color: $n5 !important
+        border-color: $n5 !important
+        color: $n1 !important
+
+        &::placeholder
+            color: $n3 !important
+

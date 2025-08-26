@@ -27,7 +27,9 @@ export const mapVisitsData = (
   dateRange,
   prevDateRange,
 ) => {
-  if (!current || !previous) {
+  if (!current || !previous || !current.data || !previous.data || 
+      !current.data.data || !Array.isArray(current.data.data)) {
+    console.warn('Invalid data structure in mapVisitsData:', { current, previous });
     return {
       value: 0,
       change: 0,
@@ -68,12 +70,14 @@ export const mapRejectionsData = (
   dateRange,
   prevDateRange,
 ) => {
-  if (!current || !previous) {
+  if (!current || !previous || !current.data || !previous.data || 
+      !current.data.data || !Array.isArray(current.data.data)) {
+    console.warn('Invalid data structure in mapRejectionsData:', { current, previous });
     return {
       value: 0,
       change: 0,
       comparedTo: dateRange.start,
-      series: [{ name: "Визиты", data: [] }],
+      series: [{ name: "Отказы", data: [] }],
       categories: [],
     };
   }

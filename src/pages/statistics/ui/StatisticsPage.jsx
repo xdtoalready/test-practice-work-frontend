@@ -80,12 +80,12 @@ export const StatisticsPage = () => {
   useEffect(() => {
     const checkServiceId = () => {
       const id = getActiveServiceFromStorage();
-      if (id) {
+      if (id && id !== 'undefined' && id !== 'null') {
         setServiceId(id);
       } else {
         const interval = setInterval(() => {
           const id = getActiveServiceFromStorage();
-          if (id) {
+          if (id && id !== 'undefined' && id !== 'null') {
             setServiceId(id);
             clearInterval(interval);
           }

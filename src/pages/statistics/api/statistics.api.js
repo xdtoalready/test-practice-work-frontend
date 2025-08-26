@@ -130,7 +130,11 @@ export const statisticsApi = {
     }
   },
 
-  fetchRejections: async (period, dateRange, serviceType,serviceId) => {
+  fetchRejections: async (period, dateRange, serviceType, serviceId) => {
+    if (!serviceId || serviceId === 'undefined' || serviceId === 'null') {
+      console.warn('ServiceId is invalid for fetchRejections:', serviceId);
+      throw new Error('Invalid service ID');
+    }
     try {
       // Format dates for Yandex Metrica
       const getCurrentHeaderByServiceType = () => {
@@ -191,6 +195,10 @@ export const statisticsApi = {
   },
   fetchGoalsList: async (serviceId) => {
     try {
+      if (!serviceId || serviceId === 'undefined' || serviceId === 'null') {
+        console.warn('ServiceId is invalid for fetchGoalsList:', serviceId);
+        return [];
+      }
       const response = await apiClient2.get(
         `/api/cabinet/${serviceId}/yandex/counter-goals`,
       );

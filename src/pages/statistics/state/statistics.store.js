@@ -226,7 +226,12 @@ export const useStatisticsStore = create((set, get) => ({
     }
   },
 
-  fetchRejections: async (serviceType,serviceId) => {
+  fetchRejections: async (serviceType, serviceId) => {
+    if (!serviceId || serviceId === 'undefined' || serviceId === 'null') {
+      console.warn('Invalid serviceId in fetchRejections store:', serviceId);
+      set({ rejectionsLoading: false });
+      return;
+    }
     const { period, dateRange } = get();
     set({ rejectionsLoading: true });
     try {
@@ -239,7 +244,18 @@ export const useStatisticsStore = create((set, get) => ({
       set({ rejections: response, rejectionsLoading: false });
     } catch (error) {
       console.error("Failed to fetch rejections:", error);
-      set({ rejectionsLoading: false });
+      set({ 
+        rejections: {
+          data: {
+            value: 0,
+            change: 0,
+            comparedTo: dateRange.start,
+            series: [{ name: "Отказы", data: [] }],
+            categories: [],
+          }
+        }, 
+        rejectionsLoading: false 
+      });
     }
   },
 

@@ -64,8 +64,9 @@ export const DocumentsPage = () => {
   const itemForDocMapping = {
     date: "Дата",
     sum: "Сумма",
-    status: "Статус оплаты",
+    status: "Статус",
     number: "Номер",
+    reportType: "Тип отчета",
   };
 
   const itemsForDocTable = documents.map((el) => {

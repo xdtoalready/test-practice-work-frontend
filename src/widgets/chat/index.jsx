@@ -1,5 +1,5 @@
 import {Icon} from "../../shared/ui/icon";
-import React, {useEffect, useMemo, useRef, useState} from "react";
+import React, {useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 import {apiClient2} from "../../shared/api/client";
 import {useOutsideClick} from "../../core/hooks/useOutsideClick";
 import {createPortal} from "react-dom";

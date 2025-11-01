@@ -24,7 +24,7 @@ export const statusMapping = {
   created: "Создана",
   'time_evaluation':'На согласовании',
   in_work: "В работе",
-  review: "На проверке",
+  waiting_for_approval: "На проверке",
   finished: "Завершено",
   paused: "Отложено",
 };
@@ -32,9 +32,9 @@ export const statusMapping = {
 // Маппинг статусов к порядку колонок
 export const statusOrder = [
   "created",
-    'time_evaluation',
+  'time_evaluation',
   "in_work",
-  "review",
+  "waiting_for_approval",
   "finished",
   "paused",
 ];

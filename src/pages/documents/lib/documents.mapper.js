@@ -1,6 +1,12 @@
 // documents.mapper.js
 import { formatCurrency } from "../../../core/lib/utils";
-import {colorDocStatusTypes, docStatusTypesRu} from "./constants";
+import {
+  colorDocStatusTypes,
+  docStatusTypesRu,
+  colorReportStatusTypes,
+  reportStatusTypesRu,
+  reportTypesRu
+} from "./constants";
 
 export const mapDocumentsFromApi = (apiDocs) => {
   return apiDocs.map((doc) => {
@@ -20,14 +26,27 @@ export const mapDocumentsFromApi = (apiDocs) => {
       return `${day}.${month}.${year}`;
     };
 
+    // Для отчетов используем другую структуру данных
+    if (doc.type === "Report") {
+      return {
+        id: doc.data.id,
+        type: type,
+        date: formatDate(doc.data.creation_date),
+        number: doc.data.id || "без номера",
+        reportType: doc.data.type ? reportTypesRu[doc.data.type] : "Не указано",
+        status: doc.data.status ? reportStatusTypesRu[doc.data.status] : 'Не указано',
+        link: doc.data?.view,
+        className: doc.data.status ? colorReportStatusTypes[doc.data.status].class : '_grey',
+      };
+    }
 
+    // Для счетов и актов используем старую структуру
     return {
       id: doc.data.id,
       type: type,
       date: formatDate(doc.data.creation_date || doc.data.payment_date),
       number: doc.data.number || "без номера",
       sum: doc.data?.sum ? formatCurrency(doc.data?.sum) : "Не указано",
-
       status: doc.data.status ? docStatusTypesRu[doc.data.status] : 'Не указано',
       link:
         doc.data?.stamped_act ??

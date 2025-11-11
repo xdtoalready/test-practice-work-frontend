@@ -70,6 +70,11 @@ export const DocumentsPage = () => {
     reportType: "Тип отчета",
   };
 
+  const handleOpenDocument = (apiType, id) => {
+    const url = `/documents/${apiType}/${id}`;
+    window.open(url, "_blank");
+  };
+
   const itemsForDocTable = documents.map((el) => {
     return Object.entries(el)
       .map(([key, value]) => {
@@ -79,7 +84,7 @@ export const DocumentsPage = () => {
               <div>
                 <Button
                   onClick={() => {
-                    navigate(`/documents/${el.apiType}/${el.id}`);
+                    handleOpenDocument(el.apiType, el.id);
                   }}
                 >
                   Открыть

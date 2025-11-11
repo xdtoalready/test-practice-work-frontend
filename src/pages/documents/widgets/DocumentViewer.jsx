@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Layout } from "../../../shared/ui/layout";
-import PageTtile from "../../../widgets/common/ui/PageTtile";
-import { Button } from "../../../shared/ui/button";
 import { documentsApi } from "../api/documents.api";
-import "../../../widgets/common/ui/document-viewer.css";
+import "./DocumentViewer.css";
 
 export const DocumentViewer = () => {
   const { type, id } = useParams();
@@ -43,6 +40,9 @@ export const DocumentViewer = () => {
         console.error("Error loading PDF:", err);
         if (err.response?.status === 403) {
           setError("У вас нет доступа к этому документу");
+        } else if (err.response?.status === 401) {
+          // Редирект на страницу входа при неавторизованном доступе
+          navigate("/signin");
         } else {
           setError("Ошибка загрузки документа");
         }
@@ -59,7 +59,7 @@ export const DocumentViewer = () => {
         URL.revokeObjectURL(blobUrl);
       }
     };
-  }, [type, id]);
+  }, [type, id, navigate]);
 
   const getDocumentTitle = () => {
     switch (type) {
@@ -74,43 +74,35 @@ export const DocumentViewer = () => {
     }
   };
 
-  const handleBack = () => {
-    navigate("/documents");
-  };
+  // Устанавливаем заголовок страницы
+  useEffect(() => {
+    document.title = getDocumentTitle();
+  }, [type, id]);
 
-  return (
-    <Layout>
-      <div className="page__inner document-viewer-page">
-        <div className="document-viewer__header">
-          <PageTtile title={getDocumentTitle()} />
-          <Button onClick={handleBack} className="document-viewer__back-btn">
-            Назад к документам
-          </Button>
-        </div>
-
-        {isLoading && (
-          <div className="document-viewer__loading">
-            Загрузка документа...
-          </div>
-        )}
-
-        {error && (
-          <div className="document-viewer__error">
-            <p>{error}</p>
-            <Button onClick={handleBack}>Вернуться к списку</Button>
-          </div>
-        )}
-
-        {pdfUrl && !error && (
-          <div className="document-viewer__container">
-            <iframe
-              src={pdfUrl}
-              className="document-viewer__iframe"
-              title={getDocumentTitle()}
-            />
-          </div>
-        )}
+  // Простой лоадер без UI
+  if (isLoading) {
+    return (
+      <div className="pdf-viewer-loading">
+        <div className="pdf-viewer-spinner"></div>
       </div>
-    </Layout>
+    );
+  }
+
+  // Сообщение об ошибке без UI
+  if (error) {
+    return (
+      <div className="pdf-viewer-error">
+        <p>{error}</p>
+      </div>
+    );
+  }
+
+  // Чистый iframe с PDF на весь экран
+  return (
+    <iframe
+      src={pdfUrl}
+      className="pdf-viewer-iframe"
+      title={getDocumentTitle()}
+    />
   );
 };

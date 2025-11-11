@@ -27,29 +27,36 @@ export const documentsApi = {
   // Методы для загрузки PDF файлов
   getBillPdf: async (billId) => {
     try {
-      const response = await apiClient2.get(`/api/cabinet/bills/${billId}`, {
-        responseType: "blob",
-      });
+      // Получаем JSON ответ с file и filename
+      const response = await apiClient2.get(`/api/cabinet/bills/${billId}`);
 
-      // Извлекаем filename из Content-Disposition header
-      const contentDisposition = response.headers['content-disposition'];
-      let filename = `bill-${billId}.pdf`;
+      const { file, filename } = response.data;
 
-      if (contentDisposition) {
-        const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-        if (filenameMatch && filenameMatch[1]) {
-          filename = filenameMatch[1].replace(/['"]/g, '');
-          // Декодируем если закодировано в UTF-8
-          if (filename.includes('UTF-8')) {
-            const utf8Match = filename.match(/UTF-8''(.*)/);
-            if (utf8Match) {
-              filename = decodeURIComponent(utf8Match[1]);
-            }
-          }
-        }
+      if (!file) {
+        throw new Error("PDF file not found in response");
       }
 
-      return { blob: response.data, filename };
+      // Конвертируем file в blob
+      // file может быть base64 string или binary data
+      let blob;
+      if (typeof file === 'string') {
+        // Если это base64 строка
+        const base64Data = file.includes('base64,') ? file.split('base64,')[1] : file;
+        const binaryString = window.atob(base64Data);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        blob = new Blob([bytes], { type: 'application/pdf' });
+      } else {
+        // Если это уже binary data
+        blob = new Blob([file], { type: 'application/pdf' });
+      }
+
+      return {
+        blob,
+        filename: filename ? `${filename}.pdf` : `bill-${billId}.pdf`
+      };
     } catch (error) {
       console.error("Error fetching bill PDF:", error);
       throw error;
@@ -58,29 +65,34 @@ export const documentsApi = {
 
   getActPdf: async (actId) => {
     try {
-      const response = await apiClient2.get(`/api/cabinet/acts/${actId}`, {
-        responseType: "blob",
-      });
+      // Получаем JSON ответ с file и filename
+      const response = await apiClient2.get(`/api/cabinet/acts/${actId}`);
 
-      // Извлекаем filename из Content-Disposition header
-      const contentDisposition = response.headers['content-disposition'];
-      let filename = `act-${actId}.pdf`;
+      const { file, filename } = response.data;
 
-      if (contentDisposition) {
-        const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-        if (filenameMatch && filenameMatch[1]) {
-          filename = filenameMatch[1].replace(/['"]/g, '');
-          // Декодируем если закодировано в UTF-8
-          if (filename.includes('UTF-8')) {
-            const utf8Match = filename.match(/UTF-8''(.*)/);
-            if (utf8Match) {
-              filename = decodeURIComponent(utf8Match[1]);
-            }
-          }
-        }
+      if (!file) {
+        throw new Error("PDF file not found in response");
       }
 
-      return { blob: response.data, filename };
+      // Конвертируем file в blob
+      let blob;
+      if (typeof file === 'string') {
+        // Если это base64 строка
+        const base64Data = file.includes('base64,') ? file.split('base64,')[1] : file;
+        const binaryString = window.atob(base64Data);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        blob = new Blob([bytes], { type: 'application/pdf' });
+      } else {
+        blob = new Blob([file], { type: 'application/pdf' });
+      }
+
+      return {
+        blob,
+        filename: filename ? `${filename}.pdf` : `act-${actId}.pdf`
+      };
     } catch (error) {
       console.error("Error fetching act PDF:", error);
       throw error;
@@ -89,29 +101,34 @@ export const documentsApi = {
 
   getReportPdf: async (reportId) => {
     try {
-      const response = await apiClient2.get(`/api/cabinet/reports/${reportId}`, {
-        responseType: "blob",
-      });
+      // Получаем JSON ответ с file и filename
+      const response = await apiClient2.get(`/api/cabinet/reports/${reportId}`);
 
-      // Извлекаем filename из Content-Disposition header
-      const contentDisposition = response.headers['content-disposition'];
-      let filename = `report-${reportId}.pdf`;
+      const { file, filename } = response.data;
 
-      if (contentDisposition) {
-        const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-        if (filenameMatch && filenameMatch[1]) {
-          filename = filenameMatch[1].replace(/['"]/g, '');
-          // Декодируем если закодировано в UTF-8
-          if (filename.includes('UTF-8')) {
-            const utf8Match = filename.match(/UTF-8''(.*)/);
-            if (utf8Match) {
-              filename = decodeURIComponent(utf8Match[1]);
-            }
-          }
-        }
+      if (!file) {
+        throw new Error("PDF file not found in response");
       }
 
-      return { blob: response.data, filename };
+      // Конвертируем file в blob
+      let blob;
+      if (typeof file === 'string') {
+        // Если это base64 строка
+        const base64Data = file.includes('base64,') ? file.split('base64,')[1] : file;
+        const binaryString = window.atob(base64Data);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        blob = new Blob([bytes], { type: 'application/pdf' });
+      } else {
+        blob = new Blob([file], { type: 'application/pdf' });
+      }
+
+      return {
+        blob,
+        filename: filename ? `${filename}.pdf` : `report-${reportId}.pdf`
+      };
     } catch (error) {
       console.error("Error fetching report PDF:", error);
       throw error;

@@ -16,6 +16,7 @@ import { useEffectOnce } from "./core/hooks/useEffectOnce";
 import { TasksPage } from "./pages/tasks/ui/TasksPage";
 import { StatisticsPage } from "./pages/statistics";
 import { DocumentsPage } from "./pages/documents";
+import { DocumentViewer } from "./pages/documents/widgets/DocumentViewer";
 import { FaqPage } from "./pages/faq";
 import NotFound from "./widgets/NotFound";
 
@@ -61,6 +62,14 @@ function App() {
           element={
             <ProtectedRoute>
               <DocumentsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/documents/:type/:id"
+          element={
+            <ProtectedRoute>
+              <DocumentViewer />
             </ProtectedRoute>
           }
         />

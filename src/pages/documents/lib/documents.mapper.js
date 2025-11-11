@@ -31,6 +31,7 @@ export const mapDocumentsFromApi = (apiDocs) => {
       return {
         id: doc.data.id,
         type: type,
+        apiType: "reports", // Тип для URL
         date: formatDate(doc.data.creation_date),
         number: doc.data.id || "без номера",
         reportType: doc.data.type ? reportTypesRu[doc.data.type] : "Не указано",
@@ -44,6 +45,7 @@ export const mapDocumentsFromApi = (apiDocs) => {
     return {
       id: doc.data.id,
       type: type,
+      apiType: doc.type === "Bill" ? "bills" : "acts", // Тип для URL
       date: formatDate(doc.data.creation_date || doc.data.payment_date),
       number: doc.data.number || "без номера",
       sum: doc.data?.sum ? formatCurrency(doc.data?.sum) : "Не указано",

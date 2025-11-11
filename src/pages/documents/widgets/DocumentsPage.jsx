@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { Layout } from "../../../shared/ui/layout";
 import PageTtile from "../../../widgets/common/ui/PageTtile";
 import PageTable from "../../../widgets/common/ui/PageTable";
@@ -10,8 +9,8 @@ import "../../../widgets/swipe/ui/swipe.css";
 import TasksColumns from "../../tasks/ui/TasksColumns";
 import PageTableItem from "../../../widgets/common/ui/PageTableItem";
 import { Button } from "../../../shared/ui/button";
+import { openPdfInNewWindow } from "../lib/pdf-viewer.utils";
 export const DocumentsPage = () => {
-  const navigate = useNavigate();
   const {
     docTypes,
     selectedDocType,
@@ -79,7 +78,7 @@ export const DocumentsPage = () => {
               <div>
                 <Button
                   onClick={() => {
-                    navigate(`/documents/${el.apiType}/${el.id}`);
+                    openPdfInNewWindow(el.apiType, el.id, `${el.type} №${el.number}`);
                   }}
                 >
                   Открыть

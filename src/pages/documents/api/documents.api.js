@@ -30,7 +30,26 @@ export const documentsApi = {
       const response = await apiClient2.get(`/api/cabinet/bills/${billId}`, {
         responseType: "blob",
       });
-      return response.data;
+
+      // Извлекаем filename из Content-Disposition header
+      const contentDisposition = response.headers['content-disposition'];
+      let filename = `bill-${billId}.pdf`;
+
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1].replace(/['"]/g, '');
+          // Декодируем если закодировано в UTF-8
+          if (filename.includes('UTF-8')) {
+            const utf8Match = filename.match(/UTF-8''(.*)/);
+            if (utf8Match) {
+              filename = decodeURIComponent(utf8Match[1]);
+            }
+          }
+        }
+      }
+
+      return { blob: response.data, filename };
     } catch (error) {
       console.error("Error fetching bill PDF:", error);
       throw error;
@@ -42,7 +61,26 @@ export const documentsApi = {
       const response = await apiClient2.get(`/api/cabinet/acts/${actId}`, {
         responseType: "blob",
       });
-      return response.data;
+
+      // Извлекаем filename из Content-Disposition header
+      const contentDisposition = response.headers['content-disposition'];
+      let filename = `act-${actId}.pdf`;
+
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1].replace(/['"]/g, '');
+          // Декодируем если закодировано в UTF-8
+          if (filename.includes('UTF-8')) {
+            const utf8Match = filename.match(/UTF-8''(.*)/);
+            if (utf8Match) {
+              filename = decodeURIComponent(utf8Match[1]);
+            }
+          }
+        }
+      }
+
+      return { blob: response.data, filename };
     } catch (error) {
       console.error("Error fetching act PDF:", error);
       throw error;
@@ -54,7 +92,26 @@ export const documentsApi = {
       const response = await apiClient2.get(`/api/cabinet/reports/${reportId}`, {
         responseType: "blob",
       });
-      return response.data;
+
+      // Извлекаем filename из Content-Disposition header
+      const contentDisposition = response.headers['content-disposition'];
+      let filename = `report-${reportId}.pdf`;
+
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1].replace(/['"]/g, '');
+          // Декодируем если закодировано в UTF-8
+          if (filename.includes('UTF-8')) {
+            const utf8Match = filename.match(/UTF-8''(.*)/);
+            if (utf8Match) {
+              filename = decodeURIComponent(utf8Match[1]);
+            }
+          }
+        }
+      }
+
+      return { blob: response.data, filename };
     } catch (error) {
       console.error("Error fetching report PDF:", error);
       throw error;

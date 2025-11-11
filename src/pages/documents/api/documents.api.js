@@ -23,4 +23,41 @@ export const documentsApi = {
       throw error;
     }
   },
+
+  // Методы для загрузки PDF файлов
+  getBillPdf: async (billId) => {
+    try {
+      const response = await apiClient2.get(`/api/cabinet/bills/${billId}`, {
+        responseType: "blob",
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching bill PDF:", error);
+      throw error;
+    }
+  },
+
+  getActPdf: async (actId) => {
+    try {
+      const response = await apiClient2.get(`/api/cabinet/acts/${actId}`, {
+        responseType: "blob",
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching act PDF:", error);
+      throw error;
+    }
+  },
+
+  getReportPdf: async (reportId) => {
+    try {
+      const response = await apiClient2.get(`/api/cabinet/reports/${reportId}`, {
+        responseType: "blob",
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching report PDF:", error);
+      throw error;
+    }
+  },
 };

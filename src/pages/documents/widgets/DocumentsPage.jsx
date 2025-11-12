@@ -10,6 +10,7 @@ import "../../../widgets/swipe/ui/swipe.css";
 import TasksColumns from "../../tasks/ui/TasksColumns";
 import PageTableItem from "../../../widgets/common/ui/PageTableItem";
 import { Button } from "../../../shared/ui/button";
+import { documentsApi } from "../api/documents.api";
 export const DocumentsPage = () => {
   const navigate = useNavigate();
   const {
@@ -75,19 +76,46 @@ export const DocumentsPage = () => {
     window.open(url, "_blank");
   };
 
+  const handleDownloadDocument = async (apiType, id) => {
+    try {
+      switch (apiType) {
+        case "bills":
+          await documentsApi.downloadBillPdf(id);
+          break;
+        case "acts":
+          await documentsApi.downloadActPdf(id);
+          break;
+        case "reports":
+          await documentsApi.downloadReportPdf(id);
+          break;
+        default:
+          console.error("Unknown document type:", apiType);
+      }
+    } catch (error) {
+      console.error("Error downloading document:", error);
+    }
+  };
+
   const itemsForDocTable = documents.map((el) => {
     return Object.entries(el)
       .map(([key, value]) => {
         if (key === "link") {
           return {
             value: (
-              <div>
+              <div style={{ display: "flex", gap: "8px" }}>
                 <Button
                   onClick={() => {
                     handleOpenDocument(el.apiType, el.id);
                   }}
                 >
-                  Открыть
+                  Просмотр
+                </Button>
+                <Button
+                  onClick={() => {
+                    handleDownloadDocument(el.apiType, el.id);
+                  }}
+                >
+                  Скачать
                 </Button>
               </div>
             ),

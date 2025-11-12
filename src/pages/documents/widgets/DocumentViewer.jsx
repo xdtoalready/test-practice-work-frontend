@@ -79,56 +79,6 @@ export const DocumentViewer = () => {
     document.title = getDocumentTitle();
   }, [type, id]);
 
-  // Функция для скачивания файла
-  const handleDownload = () => {
-    let downloadUrl;
-    switch (type) {
-      case "bills":
-        downloadUrl = documentsApi.getBillDownloadUrl(id);
-        break;
-      case "acts":
-        downloadUrl = documentsApi.getActDownloadUrl(id);
-        break;
-      case "reports":
-        downloadUrl = documentsApi.getReportDownloadUrl(id);
-        break;
-      default:
-        return;
-    }
-
-    // Получаем токен для авторизации
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      // Открываем URL с токеном в заголовках через fetch и создаем blob для скачивания
-      fetch(downloadUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((response) => response.blob())
-        .then((blob) => {
-          const url = window.URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = `document_${id}.pdf`;
-          document.body.appendChild(link);
-          link.click();
-          link.remove();
-          window.URL.revokeObjectURL(url);
-        })
-        .catch((error) => {
-          console.error("Error downloading file:", error);
-        });
-    }
-  };
-
-  // Функция для открытия просмотра в новой вкладке
-  const handleView = () => {
-    if (pdfUrl) {
-      window.open(pdfUrl, "_blank");
-    }
-  };
-
   // Простой лоадер без UI
   if (isLoading) {
     return (
@@ -147,22 +97,12 @@ export const DocumentViewer = () => {
     );
   }
 
-  // Чистый iframe с PDF на весь экран и кнопками просмотра и скачивания
+  // Чистый iframe с PDF на весь экран
   return (
-    <div className="pdf-viewer-container">
-      <div className="pdf-viewer-buttons">
-        <button className="pdf-view-button" onClick={handleView}>
-          Просмотр
-        </button>
-        <button className="pdf-download-button" onClick={handleDownload}>
-          Скачать
-        </button>
-      </div>
-      <iframe
-        src={pdfUrl}
-        className="pdf-viewer-iframe"
-        title={getDocumentTitle()}
-      />
-    </div>
+    <iframe
+      src={pdfUrl}
+      className="pdf-viewer-iframe"
+      title={getDocumentTitle()}
+    />
   );
 };

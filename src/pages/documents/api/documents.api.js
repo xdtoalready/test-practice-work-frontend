@@ -24,15 +24,12 @@ export const documentsApi = {
     }
   },
 
-  // Методы для просмотра PDF файлов (print)
+  // Методы для загрузки PDF файлов
   getBillPdf: async (billId) => {
     try {
-      const response = await apiClient2.get(
-        `/api/cabinet/bills/${billId}/print`,
-        {
-          responseType: "blob",
-        }
-      );
+      const response = await apiClient2.get(`/api/cabinet/bills/${billId}`, {
+        responseType: "blob",
+      });
       return response.data;
     } catch (error) {
       console.error("Error fetching bill PDF:", error);
@@ -42,12 +39,9 @@ export const documentsApi = {
 
   getActPdf: async (actId) => {
     try {
-      const response = await apiClient2.get(
-        `/api/cabinet/acts/${actId}/print`,
-        {
-          responseType: "blob",
-        }
-      );
+      const response = await apiClient2.get(`/api/cabinet/acts/${actId}`, {
+        responseType: "blob",
+      });
       return response.data;
     } catch (error) {
       console.error("Error fetching act PDF:", error);
@@ -57,32 +51,13 @@ export const documentsApi = {
 
   getReportPdf: async (reportId) => {
     try {
-      const response = await apiClient2.get(
-        `/api/cabinet/reports/${reportId}/print`,
-        {
-          responseType: "blob",
-        }
-      );
+      const response = await apiClient2.get(`/api/cabinet/reports/${reportId}`, {
+        responseType: "blob",
+      });
       return response.data;
     } catch (error) {
       console.error("Error fetching report PDF:", error);
       throw error;
     }
-  },
-
-  // Методы для получения URL для скачивания PDF файлов
-  getBillDownloadUrl: (billId) => {
-    const baseUrl = process.env.REACT_APP_API_URL_2 || "";
-    return `${baseUrl}/api/cabinet/bills/${billId}/download`;
-  },
-
-  getActDownloadUrl: (actId) => {
-    const baseUrl = process.env.REACT_APP_API_URL_2 || "";
-    return `${baseUrl}/api/cabinet/acts/${actId}/download`;
-  },
-
-  getReportDownloadUrl: (reportId) => {
-    const baseUrl = process.env.REACT_APP_API_URL_2 || "";
-    return `${baseUrl}/api/cabinet/reports/${reportId}/download`;
   },
 };

@@ -30,7 +30,11 @@ export const documentsApi = {
       const response = await apiClient2.get(`/api/cabinet/bills/${billId}`, {
         responseType: "blob",
       });
-      return response.data;
+      // Извлекаем имя файла из заголовка x-filename и декодируем его
+      const filename = response.headers["x-filename"]
+        ? decodeURIComponent(response.headers["x-filename"])
+        : `Счет_${billId}.pdf`;
+      return { blob: response.data, filename };
     } catch (error) {
       console.error("Error fetching bill PDF:", error);
       throw error;
@@ -42,7 +46,11 @@ export const documentsApi = {
       const response = await apiClient2.get(`/api/cabinet/acts/${actId}`, {
         responseType: "blob",
       });
-      return response.data;
+      // Извлекаем имя файла из заголовка x-filename и декодируем его
+      const filename = response.headers["x-filename"]
+        ? decodeURIComponent(response.headers["x-filename"])
+        : `Акт_${actId}.pdf`;
+      return { blob: response.data, filename };
     } catch (error) {
       console.error("Error fetching act PDF:", error);
       throw error;
@@ -54,7 +62,11 @@ export const documentsApi = {
       const response = await apiClient2.get(`/api/cabinet/reports/${reportId}`, {
         responseType: "blob",
       });
-      return response.data;
+      // Извлекаем имя файла из заголовка x-filename и декодируем его
+      const filename = response.headers["x-filename"]
+        ? decodeURIComponent(response.headers["x-filename"])
+        : `Отчет_${reportId}.pdf`;
+      return { blob: response.data, filename };
     } catch (error) {
       console.error("Error fetching report PDF:", error);
       throw error;

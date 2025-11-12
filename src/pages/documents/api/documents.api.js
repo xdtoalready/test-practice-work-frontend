@@ -2,6 +2,23 @@
 import apiClient, { apiClient2 } from "../../../shared/api/client";
 import { mapDocumentsFromApi } from "../lib/documents.mapper";
 
+/**
+ * Извлекает и декодирует имя файла из кастомного заголовка X-Filename
+ * Бэкенд отправляет имя файла в URL-encoded формате (rawurlencode)
+ */
+const extractFilenameFromXHeader = (xFilename) => {
+  if (!xFilename) {
+    return null;
+  }
+
+  try {
+    return decodeURIComponent(xFilename);
+  } catch (e) {
+    console.error("Error decoding X-Filename:", e);
+    return null;
+  }
+};
+
 export const documentsApi = {
   getDocuments: async (type = null, page = 1) => {
     try {
@@ -77,11 +94,15 @@ export const documentsApi = {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+      // Извлечение имени файла из кастомного заголовка X-Filename
+      const xFilename = response.headers.get("X-Filename");
+      const filename = extractFilenameFromXHeader(xFilename) || `bill_${billId}.pdf`;
+
       const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.download = `bill_${billId}.pdf`;
+      link.download = filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -107,11 +128,15 @@ export const documentsApi = {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+      // Извлечение имени файла из кастомного заголовка X-Filename
+      const xFilename = response.headers.get("X-Filename");
+      const filename = extractFilenameFromXHeader(xFilename) || `act_${actId}.pdf`;
+
       const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.download = `act_${actId}.pdf`;
+      link.download = filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -137,11 +162,15 @@ export const documentsApi = {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+      // Извлечение имени файла из кастомного заголовка X-Filename
+      const xFilename = response.headers.get("X-Filename");
+      const filename = extractFilenameFromXHeader(xFilename) || `report_${reportId}.pdf`;
+
       const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.download = `report_${reportId}.pdf`;
+      link.download = filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

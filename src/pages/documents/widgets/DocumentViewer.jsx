@@ -9,7 +9,6 @@ export const DocumentViewer = () => {
   const [pdfUrl, setPdfUrl] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filename, setFilename] = useState("");
 
   useEffect(() => {
     let blobUrl = null;
@@ -19,31 +18,23 @@ export const DocumentViewer = () => {
         setIsLoading(true);
         setError(null);
 
-        let pdfData;
+        let pdfBlob;
         switch (type) {
           case "bills":
-            pdfData = await documentsApi.getBillPdf(id);
+            pdfBlob = await documentsApi.getBillPdf(id);
             break;
           case "acts":
-            pdfData = await documentsApi.getActPdf(id);
+            pdfBlob = await documentsApi.getActPdf(id);
             break;
           case "reports":
-            pdfData = await documentsApi.getReportPdf(id);
+            pdfBlob = await documentsApi.getReportPdf(id);
             break;
           default:
             throw new Error("Неизвестный тип документа");
         }
 
-        const { blob, filename: pdfFilename } = pdfData;
-
-        // Сохраняем filename для использования в title
-        setFilename(pdfFilename);
-
-        // Создаем File объект с правильным именем (для корректного скачивания)
-        const file = new File([blob], pdfFilename, { type: "application/pdf" });
-
         // Создаем blob URL для безопасного отображения
-        blobUrl = URL.createObjectURL(file);
+        blobUrl = URL.createObjectURL(pdfBlob);
         setPdfUrl(blobUrl);
       } catch (err) {
         console.error("Error loading PDF:", err);
@@ -70,14 +61,23 @@ export const DocumentViewer = () => {
     };
   }, [type, id, navigate]);
 
-  // Устанавливаем заголовок страницы используя filename из API
-  useEffect(() => {
-    if (filename) {
-      // Убираем расширение .pdf для более красивого отображения
-      const titleWithoutExt = filename.replace(/\.pdf$/i, "");
-      document.title = titleWithoutExt;
+  const getDocumentTitle = () => {
+    switch (type) {
+      case "bills":
+        return `Счет №${id}`;
+      case "acts":
+        return `Акт №${id}`;
+      case "reports":
+        return `Отчет №${id}`;
+      default:
+        return "Документ";
     }
-  }, [filename]);
+  };
+
+  // Устанавливаем заголовок страницы
+  useEffect(() => {
+    document.title = getDocumentTitle();
+  }, [type, id]);
 
   // Простой лоадер без UI
   if (isLoading) {
@@ -102,7 +102,7 @@ export const DocumentViewer = () => {
     <iframe
       src={pdfUrl}
       className="pdf-viewer-iframe"
-      title={filename || "PDF документ"}
+      title={getDocumentTitle()}
     />
   );
 };

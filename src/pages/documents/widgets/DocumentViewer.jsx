@@ -7,6 +7,8 @@ export const DocumentViewer = () => {
   const { type, id } = useParams();
   const navigate = useNavigate();
   const [pdfUrl, setPdfUrl] = useState(null);
+  const [filename, setFilename] = useState(null);
+  const [pdfBlob, setPdfBlob] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -18,24 +20,26 @@ export const DocumentViewer = () => {
         setIsLoading(true);
         setError(null);
 
-        let pdfBlob;
+        let pdfData;
         switch (type) {
           case "bills":
-            pdfBlob = await documentsApi.getBillPdf(id);
+            pdfData = await documentsApi.getBillPdf(id);
             break;
           case "acts":
-            pdfBlob = await documentsApi.getActPdf(id);
+            pdfData = await documentsApi.getActPdf(id);
             break;
           case "reports":
-            pdfBlob = await documentsApi.getReportPdf(id);
+            pdfData = await documentsApi.getReportPdf(id);
             break;
           default:
             throw new Error("Неизвестный тип документа");
         }
 
         // Создаем blob URL для безопасного отображения
-        blobUrl = URL.createObjectURL(pdfBlob);
+        blobUrl = URL.createObjectURL(pdfData.blob);
         setPdfUrl(blobUrl);
+        setFilename(pdfData.filename);
+        setPdfBlob(pdfData.blob);
       } catch (err) {
         console.error("Error loading PDF:", err);
         if (err.response?.status === 403) {
@@ -79,6 +83,20 @@ export const DocumentViewer = () => {
     document.title = getDocumentTitle();
   }, [type, id]);
 
+  // Функция для скачивания файла с правильным именем
+  const handleDownload = () => {
+    if (!pdfBlob || !filename) return;
+
+    const url = URL.createObjectURL(pdfBlob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   // Простой лоадер без UI
   if (isLoading) {
     return (
@@ -97,12 +115,17 @@ export const DocumentViewer = () => {
     );
   }
 
-  // Чистый iframe с PDF на весь экран
+  // Чистый iframe с PDF на весь экран и кнопкой скачивания
   return (
-    <iframe
-      src={pdfUrl}
-      className="pdf-viewer-iframe"
-      title={getDocumentTitle()}
-    />
+    <div className="pdf-viewer-container">
+      <button className="pdf-download-button" onClick={handleDownload}>
+        Скачать {filename}
+      </button>
+      <iframe
+        src={pdfUrl}
+        className="pdf-viewer-iframe"
+        title={getDocumentTitle()}
+      />
+    </div>
   );
 };

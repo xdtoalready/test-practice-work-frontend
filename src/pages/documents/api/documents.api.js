@@ -24,17 +24,16 @@ export const documentsApi = {
     }
   },
 
-  // Методы для загрузки PDF файлов
+  // Методы для просмотра PDF файлов (print)
   getBillPdf: async (billId) => {
     try {
-      const response = await apiClient2.get(`/api/cabinet/bills/${billId}`, {
-        responseType: "blob",
-      });
-      // Извлекаем имя файла из заголовка x-filename и декодируем его
-      const filename = response.headers["x-filename"]
-        ? decodeURIComponent(response.headers["x-filename"])
-        : `Счет_${billId}.pdf`;
-      return { blob: response.data, filename };
+      const response = await apiClient2.get(
+        `/api/cabinet/bills/${billId}/print`,
+        {
+          responseType: "blob",
+        }
+      );
+      return response.data;
     } catch (error) {
       console.error("Error fetching bill PDF:", error);
       throw error;
@@ -43,14 +42,13 @@ export const documentsApi = {
 
   getActPdf: async (actId) => {
     try {
-      const response = await apiClient2.get(`/api/cabinet/acts/${actId}`, {
-        responseType: "blob",
-      });
-      // Извлекаем имя файла из заголовка x-filename и декодируем его
-      const filename = response.headers["x-filename"]
-        ? decodeURIComponent(response.headers["x-filename"])
-        : `Акт_${actId}.pdf`;
-      return { blob: response.data, filename };
+      const response = await apiClient2.get(
+        `/api/cabinet/acts/${actId}/print`,
+        {
+          responseType: "blob",
+        }
+      );
+      return response.data;
     } catch (error) {
       console.error("Error fetching act PDF:", error);
       throw error;
@@ -59,17 +57,32 @@ export const documentsApi = {
 
   getReportPdf: async (reportId) => {
     try {
-      const response = await apiClient2.get(`/api/cabinet/reports/${reportId}`, {
-        responseType: "blob",
-      });
-      // Извлекаем имя файла из заголовка x-filename и декодируем его
-      const filename = response.headers["x-filename"]
-        ? decodeURIComponent(response.headers["x-filename"])
-        : `Отчет_${reportId}.pdf`;
-      return { blob: response.data, filename };
+      const response = await apiClient2.get(
+        `/api/cabinet/reports/${reportId}/print`,
+        {
+          responseType: "blob",
+        }
+      );
+      return response.data;
     } catch (error) {
       console.error("Error fetching report PDF:", error);
       throw error;
     }
+  },
+
+  // Методы для получения URL для скачивания PDF файлов
+  getBillDownloadUrl: (billId) => {
+    const baseUrl = process.env.REACT_APP_API_URL_2 || "";
+    return `${baseUrl}/api/cabinet/bills/${billId}/download`;
+  },
+
+  getActDownloadUrl: (actId) => {
+    const baseUrl = process.env.REACT_APP_API_URL_2 || "";
+    return `${baseUrl}/api/cabinet/acts/${actId}/download`;
+  },
+
+  getReportDownloadUrl: (reportId) => {
+    const baseUrl = process.env.REACT_APP_API_URL_2 || "";
+    return `${baseUrl}/api/cabinet/reports/${reportId}/download`;
   },
 };

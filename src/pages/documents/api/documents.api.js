@@ -2,6 +2,36 @@
 import apiClient, { apiClient2 } from "../../../shared/api/client";
 import { mapDocumentsFromApi } from "../lib/documents.mapper";
 
+/**
+ * Извлекает имя файла из заголовка Content-Disposition
+ * Поддерживает форматы:
+ * - Content-Disposition: attachment; filename="filename.pdf"
+ * - Content-Disposition: attachment; filename*=UTF-8''encoded-filename.pdf
+ */
+const extractFilenameFromContentDisposition = (contentDisposition) => {
+  if (!contentDisposition) {
+    return null;
+  }
+
+  // Попытка извлечь filename* (RFC 5987) с URL-encoding
+  const filenameStarMatch = contentDisposition.match(/filename\*=UTF-8''(.+?)(?:;|$)/i);
+  if (filenameStarMatch) {
+    try {
+      return decodeURIComponent(filenameStarMatch[1]);
+    } catch (e) {
+      console.error("Error decoding filename*:", e);
+    }
+  }
+
+  // Попытка извлечь обычный filename
+  const filenameMatch = contentDisposition.match(/filename="?(.+?)"?(?:;|$)/i);
+  if (filenameMatch) {
+    return filenameMatch[1];
+  }
+
+  return null;
+};
+
 export const documentsApi = {
   getDocuments: async (type = null, page = 1) => {
     try {
@@ -77,11 +107,15 @@ export const documentsApi = {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+      // Извлечение имени файла из заголовка Content-Disposition
+      const contentDisposition = response.headers.get("Content-Disposition");
+      const filename = extractFilenameFromContentDisposition(contentDisposition) || `bill_${billId}.pdf`;
+
       const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.download = `bill_${billId}.pdf`;
+      link.download = filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -107,11 +141,15 @@ export const documentsApi = {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+      // Извлечение имени файла из заголовка Content-Disposition
+      const contentDisposition = response.headers.get("Content-Disposition");
+      const filename = extractFilenameFromContentDisposition(contentDisposition) || `act_${actId}.pdf`;
+
       const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.download = `act_${actId}.pdf`;
+      link.download = filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -137,11 +175,15 @@ export const documentsApi = {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+      // Извлечение имени файла из заголовка Content-Disposition
+      const contentDisposition = response.headers.get("Content-Disposition");
+      const filename = extractFilenameFromContentDisposition(contentDisposition) || `report_${reportId}.pdf`;
+
       const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.download = `report_${reportId}.pdf`;
+      link.download = filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

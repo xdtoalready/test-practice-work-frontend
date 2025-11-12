@@ -24,10 +24,10 @@ export const documentsApi = {
     }
   },
 
-  // Методы для загрузки PDF файлов
+  // Методы для просмотра PDF файлов (print)
   getBillPdf: async (billId) => {
     try {
-      const response = await apiClient2.get(`/api/cabinet/bills/${billId}`, {
+      const response = await apiClient2.get(`/api/cabinet/bills/${billId}/print`, {
         responseType: "blob",
       });
       return response.data;
@@ -39,7 +39,7 @@ export const documentsApi = {
 
   getActPdf: async (actId) => {
     try {
-      const response = await apiClient2.get(`/api/cabinet/acts/${actId}`, {
+      const response = await apiClient2.get(`/api/cabinet/acts/${actId}/print`, {
         responseType: "blob",
       });
       return response.data;
@@ -51,12 +51,103 @@ export const documentsApi = {
 
   getReportPdf: async (reportId) => {
     try {
-      const response = await apiClient2.get(`/api/cabinet/reports/${reportId}`, {
+      const response = await apiClient2.get(`/api/cabinet/reports/${reportId}/print`, {
         responseType: "blob",
       });
       return response.data;
     } catch (error) {
       console.error("Error fetching report PDF:", error);
+      throw error;
+    }
+  },
+
+  // Методы для скачивания PDF файлов (download)
+  downloadBillPdf: async (billId) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      const url = `${apiClient2.defaults.baseURL}/api/cabinet/bills/${billId}/download`;
+
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = `bill_${billId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Error downloading bill PDF:", error);
+      throw error;
+    }
+  },
+
+  downloadActPdf: async (actId) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      const url = `${apiClient2.defaults.baseURL}/api/cabinet/acts/${actId}/download`;
+
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = `act_${actId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Error downloading act PDF:", error);
+      throw error;
+    }
+  },
+
+  downloadReportPdf: async (reportId) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      const url = `${apiClient2.defaults.baseURL}/api/cabinet/reports/${reportId}/download`;
+
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = `report_${reportId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Error downloading report PDF:", error);
       throw error;
     }
   },
